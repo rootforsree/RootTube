@@ -46,10 +46,12 @@ public class ChannelCardPresenter extends LongClickPresenter {
                 ContextCompat.getColor(context, R.color.card_default_text);
         mNewContentBackgroundColor =
                 ContextCompat.getColor(context, R.color.dark_red);
+        // RootTube look: focused channel title gets a red panel with white
+        // text. The unfocused colors still come from the theme.
         mSelectedBackgroundColor =
-                ContextCompat.getColor(context, Helpers.getThemeAttr(context, R.attr.cardSelectedBackground));
+                ContextCompat.getColor(context, R.color.roottube_accent);
         mSelectedTextColor =
-                ContextCompat.getColor(context, R.color.card_selected_text_grey);
+                ContextCompat.getColor(context, R.color.roottube_text_primary);
 
         updateDimensions(context);
 

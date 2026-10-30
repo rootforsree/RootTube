@@ -68,4 +68,11 @@
     <color name="lb_speech_orb_not_recording">@color/orb_color</color>
     <color name="lb_speech_orb_not_recording_pulsed">@color/orb_bright_color</color>
     <color name="lb_speech_orb_not_recording_icon">@color/orb_icon_color</color>
+
+    <!-- RootTube theme tokens (browse-ui owns these; other UI packages use them) -->
+    <color name="roottube_background">#0f0f0f</color>
+    <color name="roottube_card_background">#121212</color>
+    <color name="roottube_text_primary">#FFFFFF</color>
+    <color name="roottube_text_secondary">#99FFFFFF</color>
+    <color name="roottube_accent">#FF0000</color>
 </resources>

@@ -245,6 +245,13 @@ public class VideoPlayerGlue extends MaxControlsVideoPlayerGlue<PlayerAdapter> i
 
         ((PlaybackTransportRowPresenter) rowPresenter).setOnActionLongClickedListener(this);
 
+        // RootTube look: red progress bar and light buffered track, regardless of
+        // the user's color scheme. Paint colors only; no playback behavior change.
+        ((PlaybackTransportRowPresenter) rowPresenter).setProgressColor(
+                ContextCompat.getColor(getContext(), R.color.red));
+        ((PlaybackTransportRowPresenter) rowPresenter).setSecondaryProgressColor(
+                ContextCompat.getColor(getContext(), R.color.white_50));
+
         return rowPresenter;
     }
 

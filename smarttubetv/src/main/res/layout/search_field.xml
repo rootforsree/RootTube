@@ -15,8 +15,8 @@
         android:hint="@string/channel_filter_hint"
         android:imeOptions="actionDone"
         android:inputType="textPersonName"
-        android:textColor="@color/dialog_text_color"
+        android:textColor="@android:color/white"
         android:textCursorDrawable="@null"
-        android:backgroundTint="@color/dialog_text_color"
-        android:textColorHint="@color/white_50" />
+        android:backgroundTint="@android:color/white"
+        android:textColorHint="@color/roottube_text_secondary" />
 </LinearLayout>

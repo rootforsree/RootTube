@@ -1,11 +1,13 @@
 package com.liskovsoft.smartyoutubetv2.tv.ui.widgets.complexcardview;
 
 import android.content.Context;
+import android.os.Build.VERSION;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
 import androidx.leanback.widget.ImageCardView;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
@@ -93,6 +95,14 @@ public class ComplexImageCardView extends ImageCardView {
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
+
+        // RootTube focus state: red rounded ring around the whole card.
+        // setForeground exists since API 23; older devices keep the
+        // presenter's info-field background change as the focus signal.
+        if (VERSION.SDK_INT >= 23) {
+            setForeground(selected ?
+                    ContextCompat.getDrawable(getContext(), R.drawable.roottube_card_focus_ring) : null);
+        }
 
         if (mIsCardTextAutoScrollEnabled) {
             enableTitleAnimation(selected);

@@ -58,6 +58,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean assembleStbetaRelease
 
+      - name: Build Debug APK
+        run: ./gradlew assembleStbetaDebug
+
       - name: VirusTotal Scan
         if: ${{ env.HAS_VT_KEY == 'true' }}
         id: vt
@@ -101,6 +104,13 @@ jobs:
         with:
           name: SmartTube_${{ steps.get_version.outputs.VERSION_NAME }}_armeabi-v7a
           path: ./smarttubetv/build/outputs/apk/stbeta/release/*_armeabi-v7a.apk
+          if-no-files-found: error
+
+      - name: Upload Debug ARMv7 APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: RootTube_${{ steps.get_version.outputs.VERSION_NAME }}_armeabi-v7a_debug
+          path: ./smarttubetv/build/outputs/apk/stbeta/debug/*_armeabi-v7a.apk
           if-no-files-found: error
 
       - name: Upload Universal APK

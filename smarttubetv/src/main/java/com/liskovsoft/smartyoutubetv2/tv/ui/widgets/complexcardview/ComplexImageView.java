@@ -2,9 +2,13 @@ package com.liskovsoft.smartyoutubetv2.tv.ui.widgets.complexcardview;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Outline;
+import android.os.Build.VERSION;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -59,6 +63,26 @@ public class ComplexImageView extends RelativeLayout {
         mProgressBar = findViewById(R.id.clip_progress);
         mProgressContainer = findViewById(R.id.clip_info);
         mPreviewContainer = findViewById(R.id.preview_container);
+        applyRoundedThumbnail();
+    }
+
+    /**
+     * RootTube look: rounded thumbnail corners (12dp), matching the rounded
+     * focus ring on the card. Outline clipping needs API 21+.
+     */
+    private void applyRoundedThumbnail() {
+        if (VERSION.SDK_INT < 21 || mMainImage == null) {
+            return;
+        }
+        final float radius = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 12, getResources().getDisplayMetrics());
+        mMainImage.setClipToOutline(true);
+        mMainImage.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+            }
+        });
     }
 
     /**

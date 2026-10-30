@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    RootTube player-only styles. Owned by player-ui.
+    Colors are existing tokens only (common module + app colors.xml):
+    white #FFFFFF, white_70 #B2FFFFFF, red #FF0000.
+    No new hex colors, no new strings. Do not move these into styles.xml
+    (that file is browse-ui's); keep player styles here.
+-->
+<resources>
+    <!-- Primary player readout (current/total time, seek preview title):
+         pure white, larger than the old 12sp leanback time text so it reads
+         from the couch. -->
+    <style name="PlayerTimeTextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Secondary player info (quality, clock, ending time): dimmer white
+         so the primary readout stays dominant. -->
+    <style name="PlayerSecondaryTextAppearance">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white_70</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Applied to time TextViews in lb_playback_transport_controls_row.xml.
+         Direct textColor agrees with the appearance on purpose: direct style
+         attributes win over textAppearance, so the white is guaranteed. -->
+    <style name="PlayerTimeText" parent="Widget.Leanback.PlaybackControlsTimeStyle">
+        <item name="android:textAppearance">@style/PlayerTimeTextAppearance</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="PlayerSecondaryText" parent="Widget.Leanback.PlaybackControlsTimeStyle">
+        <item name="android:textAppearance">@style/PlayerSecondaryTextAppearance</item>
+        <item name="android:textColor">@color/white_70</item>
+    </style>
+</resources>
