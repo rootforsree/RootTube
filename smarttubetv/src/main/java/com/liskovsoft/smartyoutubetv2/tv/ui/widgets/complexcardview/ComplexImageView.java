@@ -1,5 +1,6 @@
 package com.liskovsoft.smartyoutubetv2.tv.ui.widgets.complexcardview;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Outline;
@@ -70,6 +71,7 @@ public class ComplexImageView extends RelativeLayout {
      * RootTube look: rounded thumbnail corners (12dp), matching the rounded
      * focus ring on the card. Outline clipping needs API 21+.
      */
+    @TargetApi(21)
     private void applyRoundedThumbnail() {
         if (VERSION.SDK_INT < 21 || mMainImage == null) {
             return;
