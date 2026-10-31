@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     RootTube player-only styles. Owned by player-ui.
+    v2.1: type moves to the shared RootTube font (@font/roottube_sans,
+    created by the theme builder in res/font/). Time readouts get larger
+    and bolder so they read from the couch; secondary info stays dimmer.
     Colors are existing tokens only (common module + app colors.xml):
     white #FFFFFF, white_70 #B2FFFFFF, red #FF0000.
     No new hex colors, no new strings. Do not move these into styles.xml
     (that file is browse-ui's); keep player styles here.
+    NOTE: @font/roottube_sans does not exist yet at v2.1 authoring time
+    (theme builder owns it). Do not push until the theme builder lands
+    res/font/roottube_sans.xml plus its font files, or aapt fails.
 -->
 <resources>
     <!-- Primary player readout (current/total time, seek preview title):
-         pure white, larger than the old 12sp leanback time text so it reads
-         from the couch. -->
+         pure white, larger than the old 12sp leanback time text, bold
+         weight in the RootTube font so it reads from the couch. -->
     <style name="PlayerTimeTextAppearance">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/roottube_sans</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- Secondary player info (quality, clock, ending time): dimmer white
-         so the primary readout stays dominant. -->
+         so the primary readout stays dominant. Regular weight. -->
     <style name="PlayerSecondaryTextAppearance">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/white_70</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">@font/roottube_sans</item>
     </style>
 
     <!-- Applied to time TextViews in lb_playback_transport_controls_row.xml.

@@ -2,15 +2,20 @@ package com.liskovsoft.smartyoutubetv2.tv.presenter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.widget.Presenter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -35,6 +40,9 @@ import com.liskovsoft.smartyoutubetv2.tv.util.ViewUtil;
  */
 public class VideoCardPresenter extends LongClickPresenter {
     private static final String TAG = VideoCardPresenter.class.getSimpleName();
+    // RootTube v2.1 motion: one shared interpolator, no per-event allocation.
+    private static final DecelerateInterpolator sFocusInterpolator = new DecelerateInterpolator();
+    private static final float FOCUS_SCALE = 1.08f;
     private int mDefaultBackgroundColor = -1;
     private int mDefaultTextColor = -1;
     private int mSelectedBackgroundColor = -1;
@@ -72,6 +80,9 @@ public class VideoCardPresenter extends LongClickPresenter {
             public void setSelected(boolean selected) {
                 updateCardBackgroundColor(this, selected);
                 super.setSelected(selected);
+                // RootTube v2.1: focused card scales up fast. Unselected
+                // cards return to 1.0 so recycled views never keep scale.
+                animateFocusScale(this, selected);
             }
         };
 
@@ -89,7 +100,47 @@ public class VideoCardPresenter extends LongClickPresenter {
         //    cardView.setForeground(ContextCompat.getDrawable(context, R.drawable.lb_card_outline));
         //}
         updateCardBackgroundColor(cardView, false);
+        // RootTube v2.1: row/card entrance fade at medium speed. Runs only
+        // when a new holder is created, never on scroll rebinds.
+        cardView.setAlpha(0f);
+        cardView.animate().alpha(1f).setDuration(animMedium(context))
+                .setInterpolator(sFocusInterpolator).start();
         return new ViewHolder(cardView);
+    }
+
+    private void animateFocusScale(View view, boolean selected) {
+        float scale = selected ? FOCUS_SCALE : 1.0f;
+        view.animate().scaleX(scale).scaleY(scale).setDuration(animFast(view.getContext()))
+                .setInterpolator(sFocusInterpolator).start();
+    }
+
+    private static int animFast(Context context) {
+        try {
+            return context.getResources().getInteger(R.integer.roottube_anim_fast);
+        } catch (Resources.NotFoundException e) {
+            return 120;
+        }
+    }
+
+    private static int animMedium(Context context) {
+        try {
+            return context.getResources().getInteger(R.integer.roottube_anim_medium);
+        } catch (Resources.NotFoundException e) {
+            return 250;
+        }
+    }
+
+    private static void applyRoottubeFont(TextView textView, int style) {
+        // Font file is delivered by the theme builder; if it is missing at
+        // runtime the theme default applies and nothing crashes.
+        try {
+            Typeface typeface = ResourcesCompat.getFont(textView.getContext(), R.font.roottube_sans);
+            if (typeface != null) {
+                textView.setTypeface(typeface, style);
+            }
+        } catch (Resources.NotFoundException e) {
+            // Font not delivered yet; keep the theme default.
+        }
     }
 
     private void updateCardBackgroundColor(ComplexImageCardView view, boolean selected) {
@@ -105,16 +156,19 @@ public class VideoCardPresenter extends LongClickPresenter {
             infoField.setBackgroundColor(backgroundColor);
         }
 
-        // RootTube look: title stays white, subtitle stays 60% white in both
-        // states. Focus is shown by the red ring on the card, not by a text
-        // color change.
+        // RootTube v2.1 type: larger titles in the new font, subtitles one
+        // step up, both keep their locked colors in both states.
         TextView titleText = view.findViewById(R.id.title_text);
         if (titleText != null) {
             titleText.setTextColor(mDefaultTextColor);
+            titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            applyRoottubeFont(titleText, Typeface.BOLD);
         }
         TextView contentText = view.findViewById(R.id.content_text);
         if (contentText != null) {
             contentText.setTextColor(mSecondaryTextColor);
+            contentText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            applyRoottubeFont(contentText, Typeface.NORMAL);
         }
     }
 
@@ -180,6 +234,13 @@ public class VideoCardPresenter extends LongClickPresenter {
         super.onUnbindViewHolder(viewHolder);
 
         ComplexImageCardView cardView = (ComplexImageCardView) viewHolder.view;
+
+        // RootTube v2.1: recycled views must never keep focus scale or a
+        // half-finished entrance fade.
+        cardView.animate().cancel();
+        cardView.setScaleX(1.0f);
+        cardView.setScaleY(1.0f);
+        cardView.setAlpha(1.0f);
 
         // Remove references to images so that the garbage collector can free up memory.
         cardView.setBadgeImage(null);

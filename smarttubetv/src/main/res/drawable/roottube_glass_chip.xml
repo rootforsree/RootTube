@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RootTube glass chip: capsule glass for pills and chips.
+     Stronger fill so small elements stay legible over content. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="24dp" />
+    <solid android:color="@color/roottube_glass_fill_strong" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/roottube_glass_border" />
+</shape>

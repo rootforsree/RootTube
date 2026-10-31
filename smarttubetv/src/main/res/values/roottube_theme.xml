@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RootTube shared theme tokens (v2.1 theme system).
+     Glass look: translucent fill + hairline border + specular top
+     highlight. True live backdrop blur is NOT available on this
+     minSdk 17 Leanback tree, so these tokens implement the glass
+     LOOK without any blur API. One glass layer per screen.
+     Background #0f0f0f, text white, secondary 60% white, accent
+     red #ff0000 live in the existing v1 tokens and are not
+     redefined here. -->
+<resources>
+    <!-- Glass fills and borders -->
+    <color name="roottube_glass_fill">#26FFFFFF</color>
+    <color name="roottube_glass_fill_strong">#33FFFFFF</color>
+    <color name="roottube_glass_border">#4DFFFFFF</color>
+    <color name="roottube_glass_highlight">#80FFFFFF</color>
+    <color name="roottube_scrim">#99000000</color>
+
+    <!-- Animation durations, milliseconds -->
+    <integer name="roottube_anim_fast">120</integer>
+    <integer name="roottube_anim_medium">250</integer>
+    <integer name="roottube_anim_slow">400</integer>
+</resources>

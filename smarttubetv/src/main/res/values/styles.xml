@@ -49,6 +49,10 @@
     </style>
     <style name="App.Theme.Leanback.Browse" parent="Theme.Leanback.Browse">
         <item name="android:windowBackground">@color/roottube_background</item>
+        <!-- RootTube v2.1: app-wide font. This style is also the application
+             theme (see AndroidManifest), so this covers browse and all
+             screens that do not set their own theme. -->
+        <item name="android:fontFamily">@font/roottube_sans</item>
         <item name="brandColor">@color/roottube_background</item>
         <item name="brandAccentColor">@color/roottube_accent</item>
         <item name="shelfBackground">@color/roottube_background</item>

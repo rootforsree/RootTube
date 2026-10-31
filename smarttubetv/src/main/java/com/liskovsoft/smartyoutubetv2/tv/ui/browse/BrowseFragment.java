@@ -96,6 +96,17 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
 
         mProgressBarManager.setRootView((ViewGroup) root);
 
+        // RootTube v2.1 glass sidebar: one glass layer for the whole
+        // headers column, content full-bleed underneath. Null-guarded:
+        // the headers view may not exist yet on some configurations.
+        try {
+            if (getHeadersSupportFragment() != null && getHeadersSupportFragment().getView() != null) {
+                getHeadersSupportFragment().getView().setBackgroundResource(R.drawable.roottube_glass_panel);
+            }
+        } catch (Exception e) {
+            // Glass drawable not delivered yet; sidebar keeps its solid color.
+        }
+
         return root;
     }
 

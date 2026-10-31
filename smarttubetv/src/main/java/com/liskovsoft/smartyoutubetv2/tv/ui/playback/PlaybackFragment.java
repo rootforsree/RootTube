@@ -1220,6 +1220,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     @Override
     public void showControlsOverlay(boolean runAnimation) {
         super.showControlsOverlay(mIsUIAnimationsEnabled);
+        syncPlayerScrim(true);
 
         // Do throttle. Called so many times. Rely on boxing because initial state is unknown.
         if (mIsControlsShownPreviously != null && mIsControlsShownPreviously) {
@@ -1242,6 +1243,7 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
     @Override
     public void hideControlsOverlay(boolean runAnimation) {
         super.hideControlsOverlay(mIsUIAnimationsEnabled);
+        syncPlayerScrim(false);
 
         // Do throttle. Called so many times. Rely on boxing because initial state is unknown.
         if (mIsControlsShownPreviously != null && !mIsControlsShownPreviously) {
@@ -1257,6 +1259,25 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
         }
 
         mIsControlsShownPreviously = false;
+    }
+
+    /**
+     * RootTube glass scrim: visible exactly while the controls overlay is
+     * shown, so the top/bottom edge gradients protect the glass bars and
+     * never dim the video during plain watching. Pure presentation; the
+     * leanback super still owns the dock fade animation. Null-guarded:
+     * show/hide can run before the view exists.
+     */
+    private void syncPlayerScrim(boolean controlsShown) {
+        if (getView() == null) {
+            return;
+        }
+
+        View scrim = getView().findViewById(R.id.player_scrim);
+
+        if (scrim != null) {
+            scrim.setVisibility(controlsShown ? View.VISIBLE : View.GONE);
+        }
     }
 
     /**

@@ -24,6 +24,8 @@
             android:id="@+id/channel_title"
             android:singleLine="true"
             android:ellipsize="end"
+            android:fontFamily="@font/roottube_sans"
+            android:textSize="17sp"
             android:layout_gravity="start|center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

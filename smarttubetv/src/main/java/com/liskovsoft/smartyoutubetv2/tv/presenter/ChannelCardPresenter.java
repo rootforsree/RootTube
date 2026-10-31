@@ -2,16 +2,21 @@ package com.liskovsoft.smartyoutubetv2.tv.presenter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -28,9 +33,11 @@ import com.liskovsoft.smartyoutubetv2.tv.util.ViewUtil;
 
 public class ChannelCardPresenter extends LongClickPresenter {
     private static final String TAG = VideoCardPresenter.class.getSimpleName();
+    // RootTube v2.1 motion: one shared interpolator, no per-event allocation.
+    private static final DecelerateInterpolator sFocusInterpolator = new DecelerateInterpolator();
+    private static final float FOCUS_SCALE = 1.08f;
     private int mDefaultBackgroundColor;
     private int mDefaultTextColor;
-    private int mSelectedBackgroundColor;
     private int mNewContentBackgroundColor;
     private int mSelectedTextColor;
     private int mWidth;
@@ -46,10 +53,8 @@ public class ChannelCardPresenter extends LongClickPresenter {
                 ContextCompat.getColor(context, R.color.card_default_text);
         mNewContentBackgroundColor =
                 ContextCompat.getColor(context, R.color.dark_red);
-        // RootTube look: focused channel title gets a red panel with white
-        // text. The unfocused colors still come from the theme.
-        mSelectedBackgroundColor =
-                ContextCompat.getColor(context, R.color.roottube_accent);
+        // RootTube v2.1: focused channel cards use the glass focus panel
+        // (see the focus listener), not the v1 red panel.
         mSelectedTextColor =
                 ContextCompat.getColor(context, R.color.roottube_text_primary);
 
@@ -65,6 +70,7 @@ public class ChannelCardPresenter extends LongClickPresenter {
         TextView textView = container.findViewById(R.id.channel_title);
         textView.setBackgroundColor(mDefaultBackgroundColor);
         textView.setTextColor(mDefaultTextColor);
+        applyRoottubeFont(textView, Typeface.BOLD);
 
         boolean autoScrollEnabled = isCardTextAutoScrollEnabled(context);
         if (autoScrollEnabled) {
@@ -72,12 +78,25 @@ public class ChannelCardPresenter extends LongClickPresenter {
         }
 
         container.setOnFocusChangeListener((v, hasFocus) -> {
-            int backgroundColor = hasFocus ? mSelectedBackgroundColor :
-                    textView.getTag(R.id.channel_new_content) != null ? mNewContentBackgroundColor : mDefaultBackgroundColor;
-            int textColor = hasFocus ? mSelectedTextColor : mDefaultTextColor;
-            
-            textView.setBackgroundColor(backgroundColor);
-            textView.setTextColor(textColor);
+            // RootTube v2.1 glass focus: the focused channel card gets the
+            // glass focus panel and a 1.08 scale-up; the title text goes
+            // transparent so the glass shows through. Unfocused cards keep
+            // the solid dark background (new-content keeps its red panel).
+            boolean isNew = textView.getTag(R.id.channel_new_content) != null;
+            if (hasFocus) {
+                v.setBackgroundResource(R.drawable.roottube_glass_focus);
+                textView.setBackgroundColor(Color.TRANSPARENT);
+                textView.setTextColor(mSelectedTextColor);
+            } else {
+                v.setBackgroundColor(mDefaultBackgroundColor);
+                int backgroundColor = isNew ? mNewContentBackgroundColor : mDefaultBackgroundColor;
+                textView.setBackgroundColor(backgroundColor);
+                textView.setTextColor(mDefaultTextColor);
+            }
+
+            float scale = hasFocus ? FOCUS_SCALE : 1.0f;
+            v.animate().scaleX(scale).scaleY(scale).setDuration(animFast(v.getContext()))
+                    .setInterpolator(sFocusInterpolator).start();
 
             if (!autoScrollEnabled) {
                 return;
@@ -90,7 +109,39 @@ public class ChannelCardPresenter extends LongClickPresenter {
             }
         });
 
+        // RootTube v2.1: entrance fade at medium speed on holder creation.
+        container.setAlpha(0f);
+        container.animate().alpha(1f).setDuration(animMedium(context))
+                .setInterpolator(sFocusInterpolator).start();
+
         return new ViewHolder(container);
+    }
+
+    private static int animFast(Context context) {
+        try {
+            return context.getResources().getInteger(R.integer.roottube_anim_fast);
+        } catch (Resources.NotFoundException e) {
+            return 120;
+        }
+    }
+
+    private static int animMedium(Context context) {
+        try {
+            return context.getResources().getInteger(R.integer.roottube_anim_medium);
+        } catch (Resources.NotFoundException e) {
+            return 250;
+        }
+    }
+
+    private static void applyRoottubeFont(TextView textView, int style) {
+        try {
+            Typeface typeface = ResourcesCompat.getFont(textView.getContext(), R.font.roottube_sans);
+            if (typeface != null) {
+                textView.setTypeface(typeface, style);
+            }
+        } catch (Resources.NotFoundException e) {
+            // Font not delivered yet; keep the theme default.
+        }
     }
 
     @Override
@@ -109,6 +160,14 @@ public class ChannelCardPresenter extends LongClickPresenter {
         textView.setBackgroundColor(video.hasNewContent ? mNewContentBackgroundColor : mDefaultBackgroundColor);
         textView.setTag(R.id.channel_new_content, video.hasNewContent ? true : null);
 
+        // RootTube v2.1: a rebound view that is already focused must show
+        // the glass focus state, not the flat new/default background.
+        if (viewHolder.view.hasFocus()) {
+            viewHolder.view.setBackgroundResource(R.drawable.roottube_glass_focus);
+            textView.setBackgroundColor(Color.TRANSPARENT);
+            textView.setTextColor(mSelectedTextColor);
+        }
+
 
         ImageView imageView = viewHolder.view.findViewById(R.id.channel_image);
         imageView.setVisibility(View.VISIBLE);
@@ -123,6 +182,13 @@ public class ChannelCardPresenter extends LongClickPresenter {
 
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
+        // RootTube v2.1: recycled views must never keep focus scale or a
+        // half-finished entrance fade.
+        viewHolder.view.animate().cancel();
+        viewHolder.view.setScaleX(1.0f);
+        viewHolder.view.setScaleY(1.0f);
+        viewHolder.view.setAlpha(1.0f);
+
         // Remove references to images so that the garbage collector can free up memory.
         ImageView imageView = viewHolder.view.findViewById(R.id.channel_image);
         imageView.setImageDrawable(null);

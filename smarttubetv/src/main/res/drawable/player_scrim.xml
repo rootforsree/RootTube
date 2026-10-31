@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    RootTube player scrim. One full-screen gradient: dark at the top edge,
+    transparent through the middle, dark at the bottom edge. It sits above
+    the video and below the controls dock (see lb_playback_fragment.xml),
+    and PlaybackFragment toggles it with the controls overlay, so it never
+    dims the video while the user is just watching. Colors reuse existing
+    tokens only: black_87pc (#77000000) and the platform transparent.
+    No new hex, no new colors.
+-->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="linear"
+        android:angle="90"
+        android:startColor="@color/black_87pc"
+        android:centerColor="@android:color/transparent"
+        android:endColor="@color/black_87pc"
+        android:centerY="0.5" />
+</shape>
