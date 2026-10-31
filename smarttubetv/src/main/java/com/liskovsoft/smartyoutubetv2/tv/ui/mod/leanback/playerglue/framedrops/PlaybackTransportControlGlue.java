@@ -17,11 +17,13 @@
 package com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.playerglue.framedrops;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.media.MediaPlayerAdapter;
 import androidx.leanback.media.PlaybackGlueHost;
 import androidx.leanback.media.PlayerAdapter;
@@ -150,6 +152,18 @@ public class PlaybackTransportControlGlue<T extends PlayerAdapter>
                         viewHolder.getSubtitle().setText(glue.getSubtitle());
                         // MOD: add extra title line
                         viewHolder.getBody().setText(glue.getBody());
+                        // RootTube v2.1 fix: player title/subtitle/body in the app font.
+                        // Guarded so a missing font can never crash playback.
+                        try {
+                            Typeface font = ResourcesCompat.getFont(viewHolder.view.getContext(), com.liskovsoft.smartyoutubetv2.tv.R.font.roottube_sans);
+                            if (font != null) {
+                                viewHolder.getTitle().setTypeface(Typeface.create(font, Typeface.BOLD));
+                                viewHolder.getSubtitle().setTypeface(font);
+                                viewHolder.getBody().setTypeface(font);
+                            }
+                        } catch (Exception ignored) {
+                            // Keep the default typeface when the font is unavailable.
+                        }
                     }
                 };
 
