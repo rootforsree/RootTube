@@ -19,9 +19,9 @@
         <item name="android:horizontalSpacing">@dimen/grid_item_horizontal_spacing</item>
     </style>
 
-    <!-- Decrease header spacing in BrowseView -->
+    <!-- RootTube v2.2: airy sidebar, 16dp gaps on the 8pt grid -->
     <style name="BrowseHeaderStyle" parent="Widget.Leanback.Headers.VerticalGridView">
-        <item name="android:verticalSpacing">@dimen/browse_headers_vertical_spacing</item>
+        <item name="android:verticalSpacing">16dp</item>
     </style>
 
     <!-- Color scheme: Teal (Default) -->

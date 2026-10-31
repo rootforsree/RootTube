@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -105,6 +106,27 @@ public class BrowseFragment extends BrowseSupportFragment implements BrowseView 
             }
         } catch (Exception e) {
             // Glass drawable not delivered yet; sidebar keeps its solid color.
+        }
+
+        // RootTube v2.2 sidebar entrance: the headers panel glides in once
+        // on browse creation (250ms, locked roottube_anim_medium). Guarded
+        // the same way: a missing view or failed animation must never
+        // break browse, and the animation ends at alpha 1 / offset 0 so
+        // no residual transform survives it.
+        try {
+            if (getHeadersSupportFragment() != null && getHeadersSupportFragment().getView() != null) {
+                View headersView = getHeadersSupportFragment().getView();
+                headersView.setAlpha(0f);
+                headersView.setTranslationX(-32f);
+                headersView.animate()
+                        .alpha(1f)
+                        .translationX(0f)
+                        .setDuration(getResources().getInteger(R.integer.roottube_anim_medium))
+                        .setInterpolator(new DecelerateInterpolator())
+                        .start();
+            }
+        } catch (Exception e) {
+            // Sidebar shows without entrance animation.
         }
 
         return root;
